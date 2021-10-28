@@ -22,7 +22,11 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import time, sys
-
+import smbus
+tmp = smbus.SMBus(1)
+addr = 0x4a
+output = tmp.read_byte_data(addr, 0)
+os.system('./setup.sh')
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -58,7 +62,7 @@ def main():
 
     # Call the Sheets API
     sheet = service.spreadsheets()
-    values = [ [time.time()/60/60/24+ 25569 - 4/24, sys.argv[1], sys.argv[2]]]
+    values = [ [time.time()/60/60/24+ 25569 - 4/24, (output*1.8)+32]]
     body = {'values': values}
     result = sheet.values().append(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                                 range=SAMPLE_RANGE_NAME,

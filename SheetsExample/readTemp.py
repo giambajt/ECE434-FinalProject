@@ -1,5 +1,4 @@
-#!/usr/bin/python
-
+#!/usr/bin/python3
 import Adafruit_BBIO.GPIO as GPIO
 import Adafruit_BBIO.SPI as SPI
 import Adafruit_MAX31855.MAX31855 as MAX31855

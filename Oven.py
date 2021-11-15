@@ -44,10 +44,10 @@ def my_write_handler(pin, value):
     global On
     if(int(value[0]) == 0):
         On = 1
-        print("Turning power off")
+        print("\nTurning power off")
     if(int(value[0]) == 1):
         On = 0
-        print("Turning power on")
+        print("\nTurning power on")
     GPIO.output(Switch, int(On))
     
 #quit the program
@@ -78,15 +78,19 @@ def my_write_handler4(pin, value):
 while True:
     # Run the blynk client. Needs to be run every update
     blynk.run()
-    
-    # Set the message template and current temperature and reprint every 50 updates
+   
+    # Set the message template and current temperature and reprint every 10 updates
     if (count >= 10):
-        CurrentTemp = int(sensor.readTempC())
-        message = "Current Temp: {}{}C  Goal Temp: {}{}C".format(CurrentTemp,degree_sign,Goal,degree_sign)
-        print(message,end="\r") # Print the message on the same line
-        count = 0
+        try: # used to catch a NaN error caused by an unreliable internet connection
+            CurrentTemp = int(sensor.readTempC())
+            message = "Current Temp: {}{}C  Goal Temp: {}{}C".format(CurrentTemp,degree_sign,Goal,degree_sign)
+            print(message,end="\r") # Print the message on the same line
+            if (CurrentTemp >= Goal):
+                GPIO.output(Switch, 1) # off
+            elif (CurrentTemp <= Goal and On == 0):
+                GPIO.output(Switch, 0) # on
+            count = 0
+        except:
+            count = 8
     count = count + 1
     
-    
-# had to install the MAX31855 library
-# use tmux for long term testing

@@ -22,11 +22,20 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import time, sys
-import smbus
-os.system('./setup.sh')
-tmp = smbus.SMBus(1)
-addr = 0x4a
-output = tmp.read_byte_data(addr, 0)
+import Adafruit_BBIO.GPIO as GPIO
+import Adafruit_BBIO.SPI as SPI
+import Adafruit_MAX31855.MAX31855 as MAX31855
+
+CLK = 'P9_12'
+CS = 'P9_15'
+DO = 'P9_23'
+sensor = MAX31855.MAX31855(CLK, CS, DO)
+CurrentTemp = int(sensor.readTempC())
+#import smbus
+#os.system('./setup.sh')
+#tmp = smbus.SMBus(1)
+#addr = 0x4a
+#output = tmp.read_byte_data(addr, 0)
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -62,7 +71,7 @@ def main():
 
     # Call the Sheets API
     sheet = service.spreadsheets()
-    values = [ [time.time()/60/60/24+ 25569 - 4/24, (output*1.8)+32]]
+    values = [ [time.time()/60/60/24+ 25569 - 5/24, CurrentTemp]]
     body = {'values': values}
     result = sheet.values().append(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                                 range=SAMPLE_RANGE_NAME,
